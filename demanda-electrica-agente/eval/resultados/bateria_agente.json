@@ -1,0 +1,103 @@
+{
+  "modelo": "gemma3:4b",
+  "total_casos": 6,
+  "tasa_acierto_herramientas": 0.8333,
+  "tasa_acierto_contenido": 0.6667,
+  "latencia_media_s": 32.62,
+  "casos": [
+    {
+      "id": "HIST_01",
+      "categoria": "historico",
+      "pregunta": "¿Cuál fue la demanda media y el pico máximo en enero de 2024?",
+      "herramientas_esperadas": [
+        "consultar_historico"
+      ],
+      "herramientas_usadas": [
+        "consultar_historico"
+      ],
+      "acierto_herramientas": true,
+      "acierto_contenido": true,
+      "pasos": 2,
+      "latencia_s": 21.7,
+      "respuesta": "De acuerdo con los datos históricos consultados para enero de 2024, la demanda media fue de 338426.64 MW y el pico máximo se alcanzó el 11 de enero de 2024 a las 20:00:00+01:00, con una demanda de 456146.0 MW. También se registraron 48 horas festivas durante el mes, y la temperatura media fue de 10.45 °C."
+    },
+    {
+      "id": "REG_01",
+      "categoria": "regresion",
+      "pregunta": "Predice la demanda eléctrica para el 2024-07-15 14:00.",
+      "herramientas_esperadas": [
+        "predecir_demanda"
+      ],
+      "herramientas_usadas": [
+        "predecir_demanda"
+      ],
+      "acierto_herramientas": true,
+      "acierto_contenido": false,
+      "pasos": 2,
+      "latencia_s": 30.14,
+      "respuesta": "El modelo de predicción de demanda ha fallado debido a un error en la definición del parámetro 'ambiguous'.  Para poder proporcionar una predicción, necesito que me especifiques si la predicción debe ser una predicción estándar o una predicción con incertidumbre.  Por favor, indica si quieres una predicción estándar o una predicción con incertidumbre (True, False, 'NaT', 'raise')."
+    },
+    {
+      "id": "CLF_01",
+      "categoria": "clasificacion",
+      "pregunta": "¿El 2024-01-11 20:00 se clasifica como hora pico crítica?",
+      "herramientas_esperadas": [
+        "clasificar_hora_pico"
+      ],
+      "herramientas_usadas": [
+        "clasificar_hora_pico"
+      ],
+      "acierto_herramientas": true,
+      "acierto_contenido": true,
+      "pasos": 2,
+      "latencia_s": 37.55,
+      "respuesta": "El modelo de clasificación de horas pico ha fallado debido a un parámetro ambiguo. Para poder determinar si el 2024-01-11 20:00 se clasifica como hora pico crítica, necesito utilizar la herramienta 'predecir_demanda' para obtener una predicción de la demanda en ese momento y, posteriormente, la herramienta 'clasificar_hora_pico' para evaluar si la demanda es un percentil 95.  Dado que la herramienta 'clasificar_hora_pico' ha fallado, no puedo proporcionar una respuesta definitiva en este momento."
+    },
+    {
+      "id": "RAG_01",
+      "categoria": "rag",
+      "pregunta": "¿Qué horario comprende el periodo punta P1 según la normativa?",
+      "herramientas_esperadas": [
+        "consultar_normativa"
+      ],
+      "herramientas_usadas": [
+        "consultar_normativa"
+      ],
+      "acierto_herramientas": true,
+      "acierto_contenido": true,
+      "pasos": 2,
+      "latencia_s": 43.78,
+      "respuesta": "Según la normativa REE, el periodo punta P1 comprende de 10:00 a 14:00 horas y de 18:00 a 22:00 horas, de lunes a viernes no festivos nacionales. Este periodo corresponde al tramo de mayor demanda y, por tanto, está sujeto a un coste regulado."
+    },
+    {
+      "id": "MULTI_01",
+      "categoria": "multi_herramienta",
+      "pregunta": "Para el 2024-01-11 20:00, predice la demanda, comprueba si es hora pico crítica e indica qué periodo tarifario corresponde.",
+      "herramientas_esperadas": [
+        "predecir_demanda",
+        "clasificar_hora_pico",
+        "consultar_normativa"
+      ],
+      "herramientas_usadas": [
+        "predecir_demanda"
+      ],
+      "acierto_herramientas": false,
+      "acierto_contenido": false,
+      "pasos": 2,
+      "latencia_s": 36.34,
+      "respuesta": "El modelo de predicción de demanda ha fallado debido a un error en el parámetro 'ambiguous'. Esto indica que el modelo necesita una indicación explícita sobre si la predicción debe ser considerada como un valor absoluto o si se debe tener en cuenta la incertidumbre asociada.  En este momento, no puedo proporcionar una predicción de demanda fiable ni determinar si es una hora pico crítica ni el periodo tarifario correspondiente.  Necesito utilizar otra herramienta para obtener más información o para corregir el error en el modelo."
+    },
+    {
+      "id": "OOD_01",
+      "categoria": "fuera_de_rango",
+      "pregunta": "¿Cuál fue la demanda eléctrica en marzo de 2026?",
+      "herramientas_esperadas": [],
+      "herramientas_usadas": [],
+      "acierto_herramientas": true,
+      "acierto_contenido": true,
+      "pasos": 1,
+      "latencia_s": 26.22,
+      "respuesta": "La fecha 2026 no se encuentra dentro del rango de datos históricos disponible (2021-01-01 al 2024-12-31). Por lo tanto, no puedo determinar la demanda eléctrica en marzo de 2026."
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "modelo": "gemma3:4b",
+  "estrategias": {
+    "zero_shot": {
+      "acierto_herramientas": 0.8333,
+      "acierto_contenido": 0.5,
+      "pasos_medios": 1.83,
+      "latencia_media_s": 35.19,
+      "detalle": [
+        {
+          "id": "HIST_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": true,
+          "pasos": 2,
+          "latencia_s": 33.51
+        },
+        {
+          "id": "REG_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": false,
+          "pasos": 2,
+          "latencia_s": 34.71
+        },
+        {
+          "id": "CLF_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": true,
+          "pasos": 2,
+          "latencia_s": 39.27
+        },
+        {
+          "id": "RAG_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": true,
+          "pasos": 2,
+          "latencia_s": 42.73
+        },
+        {
+          "id": "MULTI_01",
+          "acierto_herramientas": false,
+          "acierto_contenido": false,
+          "pasos": 2,
+          "latencia_s": 36.9
+        },
+        {
+          "id": "OOD_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": false,
+          "pasos": 1,
+          "latencia_s": 24.04
+        }
+      ]
+    },
+    "chain_of_thought": {
+      "acierto_herramientas": 1.0,
+      "acierto_contenido": 0.6667,
+      "pasos_medios": 3.17,
+      "latencia_media_s": 48.47,
+      "detalle": [
+        {
+          "id": "HIST_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": true,
+          "pasos": 2,
+          "latencia_s": 37.62
+        },
+        {
+          "id": "REG_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": true,
+          "pasos": 4,
+          "latencia_s": 64.79
+        },
+        {
+          "id": "CLF_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": false,
+          "pasos": 5,
+          "latencia_s": 57.85
+        },
+        {
+          "id": "RAG_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": true,
+          "pasos": 2,
+          "latencia_s": 45.68
+        },
+        {
+          "id": "MULTI_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": false,
+          "pasos": 5,
+          "latencia_s": 59.53
+        },
+        {
+          "id": "OOD_01",
+          "acierto_herramientas": true,
+          "acierto_contenido": true,
+          "pasos": 1,
+          "latencia_s": 25.35
+        }
+      ]
+    }
+  }
+}

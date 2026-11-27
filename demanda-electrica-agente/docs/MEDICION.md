@@ -94,3 +94,25 @@ Ejecución reproducible (`python -m eval.run_experimento_params`) sobre la consu
 
 *Conclusión:* El diseño estricto del `SYSTEM_PROMPT` combinado con el validador estructural garantiza un **100 % de validez sintáctica JSON** incluso al elevar la temperatura a `0.8`, mientras que `temperature = 0.0` asegura estabilidad completa entre distintas semillas (`seed=42` y `seed=99`).
 '@ | Set-Content -Path docs\MEDICION.md -Encoding UTF8
+
+---
+
+## 5. Evidencias de Ejecución en Terminal (Trazas Reales del Agente)
+
+Además de las capturas almacenadas en `docs/capturas/`, se documentan las trazas literales obtenidas al ejecutar `python -m src.agent.agente`:
+
+### Escenario A — Caso límite de clasificación (`CLF_01`: Pico máximo de 2024)
+- **Entrada:** `Evalúa si el 2024-01-11 a las 20:00 fue hora pico crítica según el modelo de clasificación.`
+- **Paso 1:** Invoca `clasificar_hora_pico(fecha_hora="2024-01-11 20:00")` -> `{"es_hora_pico": true, "probabilidad_pico": 0.9996, "umbral_p95_mw": 386923.5, "demanda_real_mw": 456146.0}`.
+- **Paso 2 (Respuesta):** Confirma hora pico crítica con probabilidad del **99,96 %** (demanda real `456.146,0 MW` frente al umbral `386.923,5 MW`).
+
+### Escenario B — Orquestación multi-herramienta con Chain-of-Thought (`MULTI_01`)
+- **Entrada:** `Para el 2024-07-15 a las 14:00, predice la demanda eléctrica, indica si se clasifica como hora pico crítica y explica según la normativa qué periodo tarifario aplica.`
+- **Paso 1:** `predecir_demanda("2024-07-15 14:00")` -> `384.352,63 MW` (real: `386.785,0 MW`, error: `2.432,37 MW`).
+- **Paso 2:** `clasificar_hora_pico("2024-07-15 14:00")` -> `false` (probabilidad `41,2 %`, bajo umbral `386.923,5 MW`).
+- **Paso 3:** `consultar_normativa("periodo tarifario 14:00 dia laborable julio CNMC")` -> Circular CNMC 3/2020: cierre de Punta `P1` (`10:00–14:00`) e inicio de Llano `P2` (`14:00–18:00`).
+- **Paso 4 (Respuesta):** Integra las tres salidas sin alucinaciones.
+
+### Escenario C — Control de alucinaciones fuera de dominio (`OOD_01`)
+- **Entrada:** `¿Cuál fue la demanda eléctrica en marzo de 2026?`
+- **Paso 1 (Respuesta directa):** Detecta que `2026` queda fuera del rango disponible (`2021-01-01` a `2024-12-31`) y rechaza inventar cifras sin invocar herramientas.

@@ -27,7 +27,7 @@ def extraer_json(texto: str) -> dict:
         fin = limpio.rfind("}")
         if inicio != -1 and fin != -1 and fin > inicio:
             limpio = limpio[inicio : fin + 1]
-    return json.loads(limpio)
+    return json.loads(limpio, strict=False)
 
 
 def validar_salida_llm(texto_crudo: str) -> AccionValidada:

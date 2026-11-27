@@ -1,31 +1,32 @@
-# Predicción de demanda eléctrica con agente (RAG + ML + prompting)
+# Agente Inteligente de Predicción y Análisis de Demanda Eléctrica Peninsular
 
-Sistema agéntico que predice la demanda eléctrica de España del día siguiente y responde
-consultas usando un modelo de ML y un RAG sobre normativa eléctrica.
+Sistema integral de ciencia de datos, aprendizaje automático, recuperación aumentada por generación (RAG) y agentes conversacionales locales con **Ollama** para el análisis histórico, predicción horaria, detección de picos críticos y consulta normativa de la demanda eléctrica peninsular en España (`2021–2024`).
 
-## Montaje desde cero
+## Arquitectura del Proyecto
 
-1. Clonar el repositorio y crear el entorno:
-   ```
-   python -m venv .venv
-   source .venv/bin/activate        # Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-2. Copiar `.env.example` a `.env` y rellenar `ESIOS_TOKEN` y `AEMET_KEY`
-   (token ESIOS: consultasios@ree.es; key AEMET: opendata.aemet.es).
-3. Instalar Ollama y descargar los modelos:
-   ```
-   ollama pull gemma3:4b
-   ollama pull nomic-embed-text
-   ```
-4. Descargar datos: `python -m src.data.descarga`
-5. Entrenar modelos: `python -m src.ml.regresion` y `python -m src.ml.clasificacion`
-6. Indexar el corpus (una vez): `python -m src.rag.indexar`
-7. Lanzar el agente: `python -m src.agent.agente`
-8. Reproducir la evaluación: `python eval/run_bateria.py` y `python eval/run_prompting.py`
-
-## Estructura
-Ver `docs/` para el informe, el documento de decisiones y el de medición.
-
-## Fuentes de datos
-ESIOS y REData (Red Eléctrica), Open-Meteo, calendario de festivos. Citar la fuente según licencia.
+```text
+demanda-electrica-agente/
+├── data/
+│   ├── corpus/                  # Documentación normativa y operativa (CNMC, REE)
+│   ├── processed/               # Datasets limpios y matriz de features (2021-2024)
+│   └── raw/                     # Descargas brutas de ESIOS, Open-Meteo y Nager.Date
+├── docs/
+│   ├── DECISIONES.md            # Justificación técnica de arquitectura, ML, RAG y agente
+│   └── MEDICION.md              # Resultados experimentales y comparativa de prompting
+├── eval/
+│   ├── baterias/                # Batería JSON de casos de prueba del agente
+│   ├── resultados/              # Métricas ML, batería del agente y comparativa CoT
+│   ├── metricas_ml.py           # Cálculo de MAE, RMSE, MAPE, R², F1 y matriz de confusión
+│   ├── run_bateria.py           # Evaluación end-to-end del agente ReAct
+│   └── run_prompting.py         # Comparativa Zero-Shot vs Chain-of-Thought
+├── models/                      # Modelos entrenados serializados (.joblib)
+├── src/
+│   ├── agent/                   # Bucle ReAct, prompts, validador JSON y 4 herramientas
+│   ├── data/                    # Descarga de APIs y limpieza/alineación temporal UTC
+│   ├── features/                # Ingeniería de variables meteorológicas, calendario y lags
+│   ├── ml/                      # Entrenamiento de modelos de regresión y clasificación
+│   ├── rag/                     # Indexación y búsqueda semántica local en Qdrant
+│   └── config.py                # Rutas, hiperparámetros y configuración de Ollama
+├── tests/
+│   └── test_pipeline_y_agente.py # Suite de verificación automática con pytest
+└── requirements.txt

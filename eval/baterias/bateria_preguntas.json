@@ -1,0 +1,44 @@
+[
+  {
+    "id": "HIST_01",
+    "categoria": "historico",
+    "pregunta": "¿Cuál fue la demanda media y el pico máximo en enero de 2024?",
+    "herramientas_esperadas": ["consultar_historico"],
+    "palabras_clave": ["338426", "456146"]
+  },
+  {
+    "id": "REG_01",
+    "categoria": "regresion",
+    "pregunta": "Predice la demanda eléctrica para el 2024-07-15 14:00.",
+    "herramientas_esperadas": ["predecir_demanda"],
+    "palabras_clave": ["MW"]
+  },
+  {
+    "id": "CLF_01",
+    "categoria": "clasificacion",
+    "pregunta": "¿El 2024-01-11 20:00 se clasifica como hora pico crítica?",
+    "herramientas_esperadas": ["clasificar_hora_pico"],
+    "palabras_clave": ["pico"]
+  },
+  {
+    "id": "RAG_01",
+    "categoria": "rag",
+    "pregunta": "¿Qué horario comprende el periodo punta P1 según la normativa?",
+    "herramientas_esperadas": ["consultar_normativa"],
+    "palabras_clave": ["10:00", "14:00", "18:00", "22:00"]
+  },
+  {
+    "id": "MULTI_01",
+    "categoria": "multi_herramienta",
+    "pregunta": "Para el 2024-01-11 20:00, predice la demanda, comprueba si es hora pico crítica e indica qué periodo tarifario corresponde.",
+    "herramientas_esperadas": ["predecir_demanda", "clasificar_hora_pico", "consultar_normativa"],
+    "palabras_clave": ["MW", "punta"]
+  },
+  {
+    "id": "OOD_01",
+    "categoria": "fuera_de_rango",
+    "pregunta": "¿Cuál fue la demanda eléctrica en marzo de 2026?",
+    "herramientas_esperadas": [],
+    "palabras_clave": ["2024"]
+  }
+] 

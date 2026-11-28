@@ -1,0 +1,42 @@
+{
+  "modelo": "gemma3:4b",
+  "pregunta": "Para el 2024-01-11 20:00, predice la demanda eléctrica, comprueba si es hora pico crítica e indica qué periodo tarifario corresponde.",
+  "experimentos": [
+    {
+      "configuracion": "determinista_seed42",
+      "temperature": 0.0,
+      "seed": 42,
+      "latencia_s": 28.87,
+      "json_valido": true,
+      "accion_elegida": "predecir_demanda",
+      "argumentos": {
+        "fecha_hora": "2024-01-11 20:00"
+      },
+      "salida_cruda": "```json\n{\"accion\": \"predecir_demanda\", \"argumentos\": {\"fecha_hora\": \"2024-01-11 20:00\"}}\n```"
+    },
+    {
+      "configuracion": "determinista_seed99",
+      "temperature": 0.0,
+      "seed": 99,
+      "latencia_s": 5.17,
+      "json_valido": true,
+      "accion_elegida": "predecir_demanda",
+      "argumentos": {
+        "fecha_hora": "2024-01-11 20:00"
+      },
+      "salida_cruda": "```json\n{\"accion\": \"predecir_demanda\", \"argumentos\": {\"fecha_hora\": \"2024-01-11 20:00\"}}\n```"
+    },
+    {
+      "configuracion": "creativo_temp08_seed42",
+      "temperature": 0.8,
+      "seed": 42,
+      "latencia_s": 4.93,
+      "json_valido": true,
+      "accion_elegida": "predecir_demanda",
+      "argumentos": {
+        "fecha_hora": "2024-01-11 20:00"
+      },
+      "salida_cruda": "```json\n{\"accion\": \"predecir_demanda\", \"argumentos\": {\"fecha_hora\": \"2024-01-11 20:00\"}}\n```"
+    }
+  ]
+}

@@ -118,9 +118,9 @@ python -m src.agent.agente
 ### 9. Reproducir la evaluación
 
 ```bash
-python eval/run_bateria.py             # batería de preguntas del agente
-python eval/run_prompting.py           # comparativa de prompting
-python eval/run_experimento_params.py  # experimento de temperature y seed
+python -m eval.run_bateria             # batería de preguntas del agente
+python -m eval.run_prompting           # comparativa de prompting
+python -m eval.run_experimento_params  # experimento de temperature y seed
 pytest tests/                          # tests automáticos
 ```
 
@@ -178,3 +178,4 @@ Datos de Red Eléctrica de España (ESIOS), usados con atribución a la fuente. 
 - **Errores más altos esperados** en festivos, puentes, cambios de hora y olas de calor o frío extremas.
 
 Los resultados, los fallos documentados y su causa están en `docs/MEDICION.md`.
+

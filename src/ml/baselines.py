@@ -1,4 +1,3 @@
-"""Baselines ingenuos: misma hora ayer y misma hora semana pasada."""
 """Modelos baseline temporales (sin entrenamiento) para regresión y clasificación.
 
 Uso (desde la raíz del proyecto):
@@ -50,6 +49,9 @@ def ejecutar_baselines() -> dict:
             "media_movil_24h": evaluar_regresion(y_test_reg, test["demanda_media_24h"]),
         },
         "clasificacion": {
+            "siempre_no": evaluar_clasificacion(
+                y_test_clf, pd.Series(0, index=y_test_clf.index, dtype=int)
+            ),
             "persistencia_24h": evaluar_clasificacion(
                 y_test_clf, (test["demanda_lag_24h"] >= umbral_pico).astype(int)
             ),

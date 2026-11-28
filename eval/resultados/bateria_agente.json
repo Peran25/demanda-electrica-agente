@@ -3,7 +3,7 @@
   "total_casos": 6,
   "tasa_acierto_herramientas": 0.8333,
   "tasa_acierto_contenido": 1.0,
-  "latencia_media_s": 39.15,
+  "latencia_media_s": 38.01,
   "casos": [
     {
       "id": "HIST_01",
@@ -18,7 +18,7 @@
       "acierto_herramientas": true,
       "acierto_contenido": true,
       "pasos": 2,
-      "latencia_s": 41.72,
+      "latencia_s": 44.64,
       "respuesta": "De acuerdo con los datos históricos consultados para enero de 2024, la demanda media fue de 338426.64 MW y el pico máximo alcanzó los 456146.0 MW, registrado el 11 de enero a las 20:00:00+01:00. También se observó una temperatura media de 10.45°C y 48 horas festivas en el mes."
     },
     {
@@ -34,7 +34,7 @@
       "acierto_herramientas": true,
       "acierto_contenido": true,
       "pasos": 2,
-      "latencia_s": 38.65,
+      "latencia_s": 33.75,
       "respuesta": "La demanda eléctrica predicha para el 15 de julio de 2024 a las 14:00 es de 384352.63 MW. La demanda real registrada fue de 386785.0 MW, lo que supone un error absoluto de 2432.37 MW. La temperatura media para esa hora era de 30.98 °C y no era un día festivo."
     },
     {
@@ -50,7 +50,7 @@
       "acierto_herramientas": true,
       "acierto_contenido": true,
       "pasos": 2,
-      "latencia_s": 38.42,
+      "latencia_s": 35.59,
       "respuesta": "Según el análisis realizado, el 11 de enero de 2024 a las 20:00 se clasifica como una hora pico crítica. La probabilidad de que se trate de una hora pico crítica es del 99.96%, lo que indica una alta certeza. La demanda real en ese momento era de 456146 MW, superando el umbral crítico de 386923.5 MW. Esto sugiere que la carga en ese momento era excepcionalmente alta y se considera una hora pico crítica según los criterios establecidos."
     },
     {
@@ -66,7 +66,7 @@
       "acierto_herramientas": true,
       "acierto_contenido": true,
       "pasos": 2,
-      "latencia_s": 42.75,
+      "latencia_s": 40.59,
       "respuesta": "Según la normativa REE, el periodo punta P1 comprende de 10:00 a 14:00 horas y de 18:00 a 22:00 horas, de lunes a viernes no festivos nacionales. Este periodo corresponde al tramo de mayor demanda y, por tanto, está sujeto a un coste regulado."
     },
     {
@@ -84,7 +84,7 @@
       "acierto_herramientas": false,
       "acierto_contenido": true,
       "pasos": 2,
-      "latencia_s": 48.23,
+      "latencia_s": 48.68,
       "respuesta": "Con base en la predicción de la demanda horaria del 11 de enero de 2024 a las 20:00, la demanda estimada es de 446931.04 MW. La demanda real registrada fue de 456146.0 MW, lo que representa un error absoluto de 9214.96 MW. La temperatura media a esa hora era de 7.75 °C y no era un día festivo.  Analizando la información, la demanda es considerablemente alta, lo que sugiere una hora pico crítica.  Según la clasificación realizada, la probabilidad de que sea una hora pico crítica (percentil 95) es alta.  Respecto al periodo tarifario, dado el nivel de demanda, se corresponde con el periodo tarifario de **Punta P1**."
     },
     {
@@ -96,7 +96,7 @@
       "acierto_herramientas": true,
       "acierto_contenido": true,
       "pasos": 1,
-      "latencia_s": 25.12,
+      "latencia_s": 24.79,
       "respuesta": "La fecha 2026 no se encuentra dentro del rango de datos históricos disponible (2021-01-01 al 2024-12-31). Por lo tanto, no puedo determinar la demanda eléctrica en marzo de 2026."
     }
   ]

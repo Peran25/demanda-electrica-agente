@@ -1,73 +1,68 @@
-@'
 # Documento de Medición y Validación Experimental
 
 ## 1. Origen, Naturaleza y Particionado de los Datos
 Los datos utilizados provienen íntegramente de **fuentes oficiales reales** recolectadas mediante scripts reproducibles (`src/data/`):
-- **Demanda eléctrica real (`ESIOS`, indicador 1293):** Serie horaria en MW de la demanda peninsular española entre `2021-01-01` y `2024-12-31` (`35.064` registros originales).
+- **Demanda eléctrica real (`ESIOS`, indicador 1293):** Serie horaria en MW de la demanda peninsular española entre `2021-01-01` y `2024-12-31`, tras corregir la escala histórica y alinear en UTC. Se registran `8` horas ausentes correspondientes a `00:00` y `01:00 UTC` de los 4 domingos de cambio de hora (DST) en octubre entre `2021` y `2024`.
 - **Meteorología (`Open-Meteo`):** Temperatura horaria a 2 m en Madrid, Barcelona, Valencia y Sevilla.
 - **Calendario laboral (`Nager.Date`):** Festivos nacionales oficiales en España.
 
 Tras la alineación UTC y la generación de retardos temporales (`lag_168h` requiere los primeros 7 días de 2021), el dataset supervisado (`data/processed/dataset_features.csv`) quedó particionado cronológicamente en:
 - **Entrenamiento (`2021–2023`):** `26.106` registros horarios.
-- **Evaluación / Test (`2024`):** `8.782` registros horarios (`8.044` horas normales y `738` horas pico críticas).
+- **Evaluación / Test (`2024`):** `8.782` registros horarios (`8.517` horas no pico / `96,98 %` y `265` horas pico críticas / `3,02 %`).
 
 ---
 
 ## 2. Evaluación de Machine Learning (`eval/resultados/`)
 
 ### 2.1 Modelos Baseline (`baselines.json`)
-Para establecer un suelo de referencia antes de entrenar modelos paramétricos, se evaluaron tres heurísticas temporales sobre el conjunto de test (`2024`):
+Para establecer un suelo de referencia antes de entrenar modelos paramétricos, se evaluaron heurísticas temporales y un baseline trivial sobre el conjunto de test (`2024`):
 
+#### Regresión (`baselines.json`)
 | Baseline | MSE (MW²) | RMSE (MW) | MAE (MW) | MAPE (%) | R² |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Media móvil 24h | 1.606.414.030,57 | 40.080,10 | 33.455,97 | 10,914 % | 0,3143 |
-| Persistencia diaria (`lag_24h`) | 975.216.267,95 | 31.228,45 | 20.891,03 | 6,701 % | 0,5837 |
-| Persistencia semanal (`lag_168h`) | 511.401.561,94 | 22.614,19 | 14.765,09 | 4,607 % | 0,7817 |
+| Media móvil 24h (`media_movil_24h`) | 11.155.652,99 | 3.340,01 | 2.788,00 | 10,914 % | 0,3143 |
+| Persistencia diaria (`persistencia_24h`) | 6.772.335,19 | 2.602,37 | 1.740,92 | 6,701 % | 0,5837 |
+| Persistencia semanal (`persistencia_168h`) | 3.551.399,74 | 1.884,52 | 1.230,42 | 4,607 % | 0,7817 |
+
+#### Clasificación (`baselines.json`)
+| Baseline | Accuracy | Precision | Recall | F1-Score | Matriz de Confusión `[[TN, FP], [FN, TP]]` |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| Siempre no (`siempre_no`) | 0,9698 | 0,0000 | 0,0000 | 0,0000 | `[[8517, 0], [265, 0]]` |
+| Persistencia semanal (`persistencia_168h`) | 0,9581 | 0,3057 | 0,3057 | 0,3057 | `[[8333, 184], [184, 81]]` |
+| Persistencia diaria (`persistencia_24h`) | 0,9759 | 0,6000 | 0,6000 | 0,6000 | `[[8411, 106], [106, 159]]` |
 
 ### 2.2 Regresión de Demanda Horaria (`regresion.json`)
 Comparativa sobre las `8.782` horas del año `2024`:
 
 | Modelo | MSE (MW²) | RMSE (MW) | MAE (MW) | MAPE (%) | R² |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| `Ridge` (Lineal L2) | 117.265.747,78 | 10.828,93 | 8.209,40 | 2,559 % | 0,9499 |
-| `RandomForestRegressor` | 24.812.227,42 | 4.981,19 | 3.606,36 | 1,121 % | 0,9894 |
-| **`HistGradientBoostingRegressor`** | **16.202.713,23** | **4.025,26** | **3.007,66** | **0,935 %** | **0,9931** |
+| `Ridge` (Lineal L2) | 760.588,23 | 872,12 | 664,54 | 2,491 % | 0,9532 |
+| `RandomForest` | 173.047,89 | 415,99 | 302,96 | 1,123 % | 0,9894 |
+| **`HistGradientBoosting`** | **125.786,66** | **354,66** | **265,51** | **0,989 %** | **0,9923** |
 
-*Análisis:* En el modelo lineal `Ridge`, los mayores pesos positivos corresponden a la demanda retardada de 24 h (`demanda_lag_24h`), la persistencia semanal (`demanda_lag_168h`), la media móvil de 24 h (`rolling_mean_24h`) y los grados-día de climatización (`hdd_18`, `cdd_22`), mientras que los pesos negativos más fuertes recaen sobre `es_festivo` y `es_fin_de_semana`. El salto a `HistGradientBoosting` reduce el `MSE` en un **86,2 %** respecto al modelo lineal al capturar interacciones no lineales entre hora, temperatura y tipo de día.
+*Análisis:* `HistGradientBoosting` obtiene el mejor rendimiento en test (`RMSE = 354,66 MW`, `MAE = 265,51 MW`, `MAPE = 0,989 %`, `R² = 0,9923`), reduciendo el error respecto a `persistencia_168h` (`RMSE = 1.884,52 MW`, `R² = 0,7817`) y superando ampliamente a `Ridge` (`RMSE = 872,12 MW`, `R² = 0,9532`). Como precaución metodológica, debe revisarse en futuras iteraciones el peso de variables con dependencia temporal estrecha o posible fuga según el horizonte operativo (`demanda_lag_1h`, medias y desviaciones móviles y temperatura observada).
 
-### 2.3 Clasificación de Hora Pico Crítica y Análisis de Desbalanceo (`clasificacion.json`)
-El umbral de hora pico crítica se fijó en el percentil 95 de entrenamiento (`386.923,5 MW`). En el conjunto de test (`2024`), la distribución presenta un fuerte **desbalanceo de clases**: `8.044` horas negativas (`91,6 %`) frente a `738` horas pico (`8,4 %`).
+### 2.3 Clasificación de Hora Pico Crítica y Desplazamiento de Distribución (`clasificacion.json`)
+El umbral de hora pico crítica se fijó en el percentil 95 de entrenamiento (`33.942,42 MW`). En el conjunto de test (`2024`), se observan `265` horas pico sobre `8.782` registros (`3,02 %`), frente al `5 %` teórico del percentil 95 en entrenamiento, lo que evidencia un **desplazamiento de distribución** interanual.
 
 | Modelo | Accuracy | Precision | Recall | F1-Score | Matriz de Confusión `[[TN, FP], [FN, TP]]` |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| Baseline `persistencia_24h` | 0,9472 | 0,6856 | 0,6856 | 0,6856 | `[[7812, 232], [232, 506]]` |
-| `LogisticRegression` | 0,9505 | 0,6344 | **0,9688** | 0,7668 | `[[7632, 412], [23, 715]]` |
-| `RandomForestClassifier` | 0,9763 | 0,8032 | 0,9512 | 0,8710 | `[[7872, 172], [36, 702]]` |
-| **`HistGradientBoostingClassifier`** | **0,9836** | **0,8887** | 0,9201 | **0,9041** | **`[[7959, 85], [59, 679]]`** |
+| `LogisticRegression` | 0,9713 | 0,5130 | **0,9660** | 0,6702 | `[[8274, 243], [9, 256]]` |
+| `RandomForest` | 0,9874 | 0,7265 | 0,9321 | 0,8165 | `[[8424, 93], [18, 247]]` |
+| **`HistGradientBoosting`** | **0,9907** | **0,8188** | 0,8868 | **0,8514** | **`[[8465, 52], [30, 235]]`** |
 
-*Por qué la Accuracy sola engaña en este problema:* Un clasificador trivial que predijera siempre "no es hora pico" obtendría un `91,6 %` de accuracy con `0 %` de utilidad operativa. Del mismo modo, `LogisticRegression` alcanza un `95,05 %` de accuracy pero genera **412 falsas alarmas** (`Precision = 63,44 %`), lo que provocaría activaciones innecesarias de reserva en el sistema eléctrico. `HistGradientBoostingClassifier` mantiene un `Recall` del `92,01 %` (detecta 679 de las 738 horas críticas) reduciendo los falsos positivos a solo 85 (`F1 = 0,9041`).
+*Análisis frente a baselines y desbalanceo:* Un baseline trivial `siempre_no` alcanza `0,9698` de accuracy pero `0,0` de precision, recall y F1 (no detecta ninguna de las `265` horas pico). `persistencia_168h` queda en `F1 = 0,3057` (`184` FP y `184` FN) y `persistencia_24h` en `F1 = 0,6000` (`106` FP y `106` FN). Entre los modelos entrenados, `HistGradientBoosting` logra el mayor `F1` (`0,8514`) con `81,88 %` de precision (`52` FP) y `88,68 %` de recall (`235` TP frente a `30` FN), equilibrando detección de picos y contención de falsas alarmas frente a `LogisticRegression` (`F1 = 0,6702`, `243` FP).
 
 ---
 
-## 3. Evaluación Reproducible de RAG y Agente (`eval/run_bateria.py`)
+## 3. Evaluación Reproducible de RAG y Agente (`eval/resultados/bateria_agente.json`)
 
-La batería (`eval/baterias/bateria_preguntas.json`) evalúa 6 escenarios diferenciados sobre `gemma3:4b`:
+La batería (`eval/baterias/bateria_preguntas.json`) evalúa `6` escenarios sobre `gemma3:4b`:
+- **Acierto en herramientas:** `5 / 6` (`83,33 %`).
+- **Acierto en contenido:** `6 / 6` (`100,0 %`).
+- **Latencia media:** `38,01 s`.
 
-| ID | Escenario Evaluado | Herramientas Esperadas | Herramientas Usadas | Acierto Herram. | Acierto Cont. | Pasos | Latencia (s) |
-| :--- | :--- | :--- | :--- | :---: | :---: | :---: | :---: |
-| `HIST_01` | Consulta histórica típica | `consultar_historico` | `consultar_historico` | Sí | Sí | 2 | 41,72 |
-| `REG_01` | Predicción ML regresiva | `predecir_demanda` | `predecir_demanda` | Sí | Sí | 2 | 38,65 |
-| `CLF_01` | Caso límite ML (pico 99,96 %) | `clasificar_hora_pico` | `clasificar_hora_pico` | Sí | Sí | 2 | 38,42 |
-| `RAG_01` | Consulta normativa CNMC | `consultar_normativa` | `consultar_normativa` | Sí | Sí | 2 | 42,75 |
-| `MULTI_01` | Orquestación 3 herramientas | `predecir_demanda`, `clasificar_hora_pico`, `consultar_normativa` | `predecir_demanda` | No | Sí | 2 | 48,23 |
-| `OOD_01` | Fuera de rango temporal (2026) | `[]` | `[]` | Sí | Sí | 1 | 25,12 |
-| **Total** | **6 escenarios** | — | — | **83,33 %** | **100,0 %** | **1,83** | **39,15 s** |
-
-### Análisis de Escenarios y Fallos Documentados
-1. **Escenario típico (`HIST_01`, `REG_01`, `RAG_01`):** El agente selecciona la herramienta exacta en el primer paso, recupera los valores reales (`338.426,64 MW` de media en enero de 2024; predicción de `384.352,63 MW` con error de `2.432,37 MW` el `2024-07-15 14:00`; horario punta `P1` de `10:00–14:00` y `18:00–22:00`) y responde sin alucinaciones.
-2. **Caso límite del ML (`CLF_01`):** Para el `2024-01-11 20:00` (pico máximo del año con `456.146,0 MW`, muy por encima del umbral `386.923,5 MW`), el clasificador devuelve una probabilidad de `99,96 %` y el agente justifica correctamente el estado crítico.
-3. **Consulta fuera de contexto (`OOD_01`):** Ante *"¿Cuál fue la demanda eléctrica en marzo de 2026?"*, el agente reconoce en 1 paso (`25,12 s`) que el rango disponible abarca `2021-01-01` a `2024-12-31` y rechaza responder sin invocar herramientas ni inventar cifras.
-4. **Fallo documentado en `MULTI_01` y su resolución:** En el prompt base sin desglose paso a paso, ante una petición triple, `gemma3:4b` ejecutó `predecir_demanda` e infirió el periodo tarifario `P1` desde su conocimiento previo en lugar de invocar explícitamente `clasificar_hora_pico` y `consultar_normativa`. Este comportamiento se corrigió mediante *Chain-of-Thought* (Sección 4).
+*Nota sobre escala:* Los valores numéricos registrados dentro de `eval/resultados/bateria_agente.json` corresponden a la ejecución previa al ajuste de escala histórica de demanda y quedan pendientes de regeneración tras el cierre de la medición.
 
 ---
 
@@ -75,44 +70,20 @@ La batería (`eval/baterias/bateria_preguntas.json`) evalúa 6 escenarios difere
 
 ### 4.1 Comparativa Zero-Shot vs. Chain-of-Thought (`comparativa_prompting.json`)
 Ejecución reproducible (`python -m eval.run_prompting`) sobre los 6 casos de la batería:
-
-| Estrategia de Prompting | Acierto Herramientas | Acierto Contenido | Pasos Medios | Latencia Media (s) |
-| :--- | :---: | :---: | :---: | :---: |
-| **Zero-Shot** | 83,33 % (5/6) | 83,33 % (5/6) | 1,83 | **37,24 s** |
-| **Chain-of-Thought (CoT)** | **100,0 % (6/6)** | **100,0 % (6/6)** | 2,50 | 51,24 s |
-
-- **Impacto antes/después:** Con Zero-Shot, el agente falló en `MULTI_01` (omitiendo herramientas) y en `OOD_01` (acierto contenido `83,33 %`). Al incorporar **Chain-of-Thought**, el agente descompuso `MULTI_01` en 4 pasos secuenciales invocando las 3 herramientas (`predecir_demanda`, `clasificar_hora_pico` y `consultar_normativa`), alcanzando el **100,0 % de acierto global**.
+- **Zero-Shot:** `83,33 %` (`5/6`) en acierto de herramientas, `83,33 %` (`5/6`) en acierto de contenido, `1,83` pasos medios y `37,24 s` de latencia media.
+- **Chain-of-Thought (CoT):** `100,0 %` (`6/6`) en acierto de herramientas, `100,0 %` (`6/6`) en acierto de contenido, `2,50` pasos medios y `51,24 s` de latencia media.
 
 ### 4.2 Experimento de `temperature` y `seed` (`experimento_temperatura_seed.json`)
 Ejecución reproducible (`python -m eval.run_experimento_params`) sobre la consulta compuesta de `2024-01-11 20:00`:
+- `determinista_seed42` (`temperature = 0.0`, `seed = 42`): JSON válido, acción `predecir_demanda`, `28,87 s`.
+- `determinista_seed99` (`temperature = 0.0`, `seed = 99`): JSON válido, acción `predecir_demanda`, `5,17 s`.
+- `creativo_temp08_seed42` (`temperature = 0.8`, `seed = 42`): JSON válido, acción `predecir_demanda`, `4,93 s`.
 
-| Configuración | `temperature` | `seed` | JSON Válido | Acción Elegida | Argumentos Generados | Latencia (s) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `determinista_seed42` | `0.0` | `42` | Sí | `predecir_demanda` | `{"fecha_hora": "2024-01-11 20:00"}` | 28,87 (arranque) |
-| `determinista_seed99` | `0.0` | `99` | Sí | `predecir_demanda` | `{"fecha_hora": "2024-01-11 20:00"}` | 5,17 |
-| `creativo_temp08_seed42` | `0.8` | `42` | Sí | `predecir_demanda` | `{"fecha_hora": "2024-01-11 20:00"}` | 4,93 |
-
-*Conclusión:* El diseño estricto del `SYSTEM_PROMPT` combinado con el validador estructural garantiza un **100 % de validez sintáctica JSON** incluso al elevar la temperatura a `0.8`, mientras que `temperature = 0.0` asegura estabilidad completa entre distintas semillas (`seed=42` y `seed=99`).
-'@ | Set-Content -Path docs\MEDICION.md -Encoding UTF8
+El validador estructural mantiene validez JSON en todos los escenarios probados, mientras que `temperature = 0.0` conserva coherencia entre semillas.
 
 ---
 
-## 5. Evidencias de Ejecución en Terminal (Trazas Reales del Agente)
-
-Además de las capturas almacenadas en `docs/capturas/`, se documentan las trazas literales obtenidas al ejecutar `python -m src.agent.agente`:
-
-### Escenario A — Caso límite de clasificación (`CLF_01`: Pico máximo de 2024)
-- **Entrada:** `Evalúa si el 2024-01-11 a las 20:00 fue hora pico crítica según el modelo de clasificación.`
-- **Paso 1:** Invoca `clasificar_hora_pico(fecha_hora="2024-01-11 20:00")` -> `{"es_hora_pico": true, "probabilidad_pico": 0.9996, "umbral_p95_mw": 386923.5, "demanda_real_mw": 456146.0}`.
-- **Paso 2 (Respuesta):** Confirma hora pico crítica con probabilidad del **99,96 %** (demanda real `456.146,0 MW` frente al umbral `386.923,5 MW`).
-
-### Escenario B — Orquestación multi-herramienta con Chain-of-Thought (`MULTI_01`)
-- **Entrada:** `Para el 2024-07-15 a las 14:00, predice la demanda eléctrica, indica si se clasifica como hora pico crítica y explica según la normativa qué periodo tarifario aplica.`
-- **Paso 1:** `predecir_demanda("2024-07-15 14:00")` -> `384.352,63 MW` (real: `386.785,0 MW`, error: `2.432,37 MW`).
-- **Paso 2:** `clasificar_hora_pico("2024-07-15 14:00")` -> `false` (probabilidad `41,2 %`, bajo umbral `386.923,5 MW`).
-- **Paso 3:** `consultar_normativa("periodo tarifario 14:00 dia laborable julio CNMC")` -> Circular CNMC 3/2020: cierre de Punta `P1` (`10:00–14:00`) e inicio de Llano `P2` (`14:00–18:00`).
-- **Paso 4 (Respuesta):** Integra las tres salidas sin alucinaciones.
-
-### Escenario C — Control de alucinaciones fuera de dominio (`OOD_01`)
-- **Entrada:** `¿Cuál fue la demanda eléctrica en marzo de 2026?`
-- **Paso 1 (Respuesta directa):** Detecta que `2026` queda fuera del rango disponible (`2021-01-01` a `2024-12-31`) y rechaza inventar cifras sin invocar herramientas.
+## 5. Trazas de Referencia del Agente
+- **Caso límite (`CLF_01`):** Consulta sobre `2024-01-11 20:00` mediante `clasificar_hora_pico`.
+- **Caso multi-herramienta (`MULTI_01`):** Consulta compuesta sobre `2024-01-11 20:00` (`predecir_demanda`, `clasificar_hora_pico` y `consultar_normativa`).
+- **Caso fuera de rango (`OOD_01`):** Consulta sobre marzo de `2026` resuelta sin invocar herramientas al quedar fuera del rango histórico `2021–2024`.

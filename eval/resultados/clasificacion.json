@@ -1,53 +1,53 @@
 {
   "mejor_modelo": "HistGradientBoosting",
   "percentil": 0.95,
-  "umbral_pico_MW": 386923.5,
+  "umbral_pico_MW": 33942.42,
   "modelos": {
     "LogisticRegression": {
-      "accuracy": 0.9505,
-      "precision": 0.6344,
-      "recall": 0.9688,
-      "f1": 0.7668,
+      "accuracy": 0.9713,
+      "precision": 0.513,
+      "recall": 0.966,
+      "f1": 0.6702,
       "matriz_confusion": [
         [
-          7632,
-          412
+          8274,
+          243
         ],
         [
-          23,
-          715
+          9,
+          256
         ]
       ]
     },
     "RandomForest": {
-      "accuracy": 0.9763,
-      "precision": 0.8032,
-      "recall": 0.9512,
-      "f1": 0.871,
+      "accuracy": 0.9874,
+      "precision": 0.7265,
+      "recall": 0.9321,
+      "f1": 0.8165,
       "matriz_confusion": [
         [
-          7872,
-          172
+          8424,
+          93
         ],
         [
-          36,
-          702
+          18,
+          247
         ]
       ]
     },
     "HistGradientBoosting": {
-      "accuracy": 0.9836,
-      "precision": 0.8887,
-      "recall": 0.9201,
-      "f1": 0.9041,
+      "accuracy": 0.9907,
+      "precision": 0.8188,
+      "recall": 0.8868,
+      "f1": 0.8514,
       "matriz_confusion": [
         [
-          7959,
-          85
+          8465,
+          52
         ],
         [
-          59,
-          679
+          30,
+          235
         ]
       ]
     }

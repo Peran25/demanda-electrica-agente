@@ -3,60 +3,76 @@
     "train_filas": 26106,
     "test_filas": 8782
   },
-  "umbral_pico_MW": 386923.5,
+  "umbral_pico_MW": 33942.42,
   "regresion": {
     "persistencia_24h": {
-      "MSE": 975216267.95,
-      "RMSE": 31228.45,
-      "MAE": 20891.03,
+      "MSE": 6772335.19,
+      "RMSE": 2602.37,
+      "MAE": 1740.92,
       "MAPE_%": 6.701,
       "R2": 0.5837
     },
     "persistencia_168h": {
-      "MSE": 511401561.94,
-      "RMSE": 22614.19,
-      "MAE": 14765.09,
+      "MSE": 3551399.74,
+      "RMSE": 1884.52,
+      "MAE": 1230.42,
       "MAPE_%": 4.607,
       "R2": 0.7817
     },
     "media_movil_24h": {
-      "MSE": 1606414030.57,
-      "RMSE": 40080.1,
-      "MAE": 33455.97,
+      "MSE": 11155652.99,
+      "RMSE": 3340.01,
+      "MAE": 2788.0,
       "MAPE_%": 10.914,
       "R2": 0.3143
     }
   },
   "clasificacion": {
-    "persistencia_24h": {
-      "accuracy": 0.9472,
-      "precision": 0.6856,
-      "recall": 0.6856,
-      "f1": 0.6856,
+    "siempre_no": {
+      "accuracy": 0.9698,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
       "matriz_confusion": [
         [
-          7812,
-          232
+          8517,
+          0
         ],
         [
-          232,
-          506
+          265,
+          0
+        ]
+      ]
+    },
+    "persistencia_24h": {
+      "accuracy": 0.9759,
+      "precision": 0.6,
+      "recall": 0.6,
+      "f1": 0.6,
+      "matriz_confusion": [
+        [
+          8411,
+          106
+        ],
+        [
+          106,
+          159
         ]
       ]
     },
     "persistencia_168h": {
-      "accuracy": 0.9374,
-      "precision": 0.6267,
-      "recall": 0.6301,
-      "f1": 0.6284,
+      "accuracy": 0.9581,
+      "precision": 0.3057,
+      "recall": 0.3057,
+      "f1": 0.3057,
       "matriz_confusion": [
         [
-          7767,
-          277
+          8333,
+          184
         ],
         [
-          273,
-          465
+          184,
+          81
         ]
       ]
     }

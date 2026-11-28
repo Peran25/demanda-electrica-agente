@@ -23,8 +23,8 @@ def generar_features(df: pd.DataFrame | None = None) -> pd.DataFrame:
 
     # 1. Variables de calendario
     df["hora"] = dt_madrid.dt.hour
-    df["dia_semana"] = dt_madrid.dt.dayofweek          # 0=Lunes ... 6=Domingo
-    df["dia_anio"] = dt_madrid.dt.dayofyear
+    df["dia_semana"] = dt_madrid.dt.day_of_week          # 0=Lunes ... 6=Domingo
+    df["dia_anio"] = dt_madrid.dt.day_of_year
     df["mes"] = dt_madrid.dt.month
     df["es_fin_semana"] = (df["dia_semana"] >= 5).astype(int)
     df["es_laborable"] = ((df["es_fin_semana"] == 0) & (df["es_festivo"] == 0)).astype(int)

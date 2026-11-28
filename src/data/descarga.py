@@ -272,6 +272,7 @@ def descargar_esios(indicador: int):
             "start_date": f"{ini.isoformat()}T00:00:00+01:00",
             "end_date": f"{fin.isoformat()}T23:59:59+01:00",
             "time_trunc": "hour",
+            "time_agg": "average",
         }
         r = _get(f"{ESIOS_BASE}/indicators/{indicador}", params=params, headers=_headers_esios())
         _guardar_json(ruta, r.json())

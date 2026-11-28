@@ -1,0 +1,17 @@
+# SECRETOS: nunca subir
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Bases vectoriales y modelos pesados (se regeneran con los scripts)
+qdrant_db/
+*.joblib
+
+# Datos crudos grandes (descomenta si pesan mucho)
+# data/raw/*.csv
+.DS_Store
+data/raw/
